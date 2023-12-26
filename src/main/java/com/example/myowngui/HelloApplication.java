@@ -2,11 +2,13 @@ package com.example.myowngui;
 
 import javafx.application.Application;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -18,6 +20,7 @@ import java.io.*;
 import java.time.LocalDate;
 
 public class HelloApplication extends Application {
+    Members members=new Members();
     TextField nameField=new TextField() ;
     TextField ageField = new TextField();
      String line;
@@ -31,6 +34,9 @@ public class HelloApplication extends Application {
     ComboBox<String> comboBox=new ComboBox<>();
     DatePicker datePicker=new DatePicker();
   LocalDate date;
+    TableView<Members> tableView = new TableView<>();
+    ObservableList<Members> membersList = FXCollections.observableArrayList();
+
 
     @Override
     public void start(Stage stage) throws IOException {
@@ -41,12 +47,16 @@ public class HelloApplication extends Application {
         grid.setVgap(10);
         Scene scene =new Scene(grid,600,500);
 
+        tableView.setEditable(true);
 
-      Button backButtonforDetails=new Button("back");
-      Button addMembers =new Button("Add Members");//button to take user to the form where he fills out his credentials
-      Button button=new Button("add");// button to add user details to file
-       Button show_details=new Button("show details");//button to take user to details form
-       Button select_membership_type=new Button("select");
+
+
+
+        Button backButtonforDetails=new Button("back");
+        Button addMembers =new Button("Add Members");//button to take user to the form where he fills out his credentials
+        Button button=new Button("add");// button to add user details to file
+        Button show_details=new Button("show details");//button to take user to details form
+        Button select_membership_type=new Button("select");
         Button SelectDate=new Button("date");
         datePicker.setValue(LocalDate.now());
         comboBox.setItems(FXCollections.observableArrayList(
@@ -117,9 +127,31 @@ backbutton.setOnAction(actionEvent -> {
 
             GridPane gridPane1=new GridPane() ;
             Scene scene2=new Scene(gridPane1,600,500);
+            gridPane1.add(tableView, 1, 4);
+            gridPane1.add(backButtonforDetails,100,100);
 
-            gridPane1.add(textArea,3,5);
-            textArea.setEditable(false);
+           // TableView<Members> tableView = new TableView<>();
+
+            TableColumn<Members, String> nameColumn = new TableColumn<>("Name");
+            nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+            TableColumn<Members, Integer> ageColumn = new TableColumn<>("Age");
+            ageColumn.setCellValueFactory(new PropertyValueFactory<>("age"));
+
+            TableColumn<Members, String> genderColumn = new TableColumn<>("Gender");
+            genderColumn.setCellValueFactory(new PropertyValueFactory<>("gender"));
+
+            TableColumn<Members, String> membershipColumn = new TableColumn<>("Membership");
+            membershipColumn.setCellValueFactory(new PropertyValueFactory<>("membership"));
+
+            TableColumn<Members, String> dateColumn = new TableColumn<>("Date");
+            dateColumn.setCellValueFactory(new PropertyValueFactory<>("date1"));
+
+            tableView.getColumns().addAll(nameColumn, ageColumn, genderColumn, membershipColumn, dateColumn);
+            tableView.setItems(membersList);
+
+//            gridPane1.add(textArea,3,5);
+//            textArea.setEditable(false);
              showMembers();
             backButtonforDetails.setOnAction(actionEvent -> {
                 try {
@@ -153,6 +185,7 @@ backbutton.setOnAction(actionEvent -> {
 
     void addMembers(){
 
+
         HelloApplication helloApplication=new HelloApplication();
         String name = nameField.getText();
         String age = ageField.getText();
@@ -162,22 +195,25 @@ backbutton.setOnAction(actionEvent -> {
                 try {
             FileWriter fileWriter = new FileWriter("memebers.txt", true);
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
-            bufferedWriter.write(" ");
-            bufferedWriter.write(name);
-            bufferedWriter.write(" ");
-            bufferedWriter.write(age);
-            bufferedWriter.write("");
+
+            bufferedWriter.write(name  );
+                    bufferedWriter.write(" ");
+            bufferedWriter.write(age  );
+
                     if (male.isSelected()) {
                         selectedOption = male.getText();
                     } else if (female.isSelected()) {
                         selectedOption = female.getText();
                     }
+                    bufferedWriter.write(" ");
+             bufferedWriter.write(selectedOption  );
 
-             bufferedWriter.write(selectedOption);
                     if(membershipType!=null){
-             bufferedWriter.write(membershipType);}
-                    if(date!=null) bufferedWriter.write(String.valueOf(date));
-
+                        bufferedWriter.write(" ");
+             bufferedWriter.write(membershipType);
+                      }
+                    if(date!=null){  bufferedWriter.write(" "); bufferedWriter.write(String.valueOf(date  ));}
+                    bufferedWriter.newLine();
             bufferedWriter.close();
 
         }
@@ -191,15 +227,32 @@ backbutton.setOnAction(actionEvent -> {
     }
 
     public void showMembers() {
-        StringBuilder content = new StringBuilder();
+      //  StringBuilder content = new StringBuilder();
 
         try {
             FileReader   fileReader = new FileReader("memebers.txt");
             BufferedReader  bufferedReader=new BufferedReader(fileReader);
+//            while ((line = bufferedReader.readLine()) != null) {
+//                content.append(line).append("\n");
+
+            String line;
+
             while ((line = bufferedReader.readLine()) != null) {
-                content.append(line).append("\n");
+                String[] parts = line.split("\\s+");
+
+                if (parts.length == 5) {
+                    String name = parts[0];
+                    int age = Integer.parseInt(parts[1]);
+                    String gender = parts[2];
+                    String membership=parts[3];
+                    String date1=parts[4];
+
+
+                    Members person = new Members(name, age, gender,membership,date1);
+                    membersList.add(person);
+                }
             }
-            textArea.setText(content.toString());
+//            textArea.setText(content.toString());
             bufferedReader.close();
             fileReader.close();
         } catch (IOException e) {
