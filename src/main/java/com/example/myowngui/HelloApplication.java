@@ -46,6 +46,26 @@ public class HelloApplication extends Application {
         Scene scene =new Scene(grid,600,500);
 
         membersList = FXCollections.observableArrayList(new Members());
+
+        TableColumn<Members, String> nameColumn = new TableColumn<>("Name");
+        nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
+
+        TableColumn<Members, Integer> ageColumn = new TableColumn<>("Age");
+        ageColumn.setCellValueFactory(new PropertyValueFactory<>("age"));
+
+        TableColumn<Members, String> genderColumn = new TableColumn<>("Gender");
+        genderColumn.setCellValueFactory(new PropertyValueFactory<>("gender"));
+
+        TableColumn<Members, String> membershipColumn = new TableColumn<>("Membership");
+        membershipColumn.setCellValueFactory(new PropertyValueFactory<>("membership"));
+
+        TableColumn<Members, String> dateColumn = new TableColumn<>("Date");
+        dateColumn.setCellValueFactory(new PropertyValueFactory<>("date1"));
+
+        tableView.getColumns().addAll(nameColumn, ageColumn, genderColumn, membershipColumn, dateColumn);
+        tableView.setItems(readMembers());
+        tableView.refresh();
+
         Button backButtonforDetails=new Button("back");
         Button addMembers =new Button("Add Members");//button to take user to the form where he fills out his credentials
         Button button=new Button("add");// button to add user details to file
@@ -121,24 +141,6 @@ backbutton.setOnAction(actionEvent -> {//button to go back to main scene
             gridPane1.add(tableView, 1, 4);
             gridPane1.add(backButtonforDetails,100,100);
 
-            TableColumn<Members, String> nameColumn = new TableColumn<>("Name");
-            nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
-
-            TableColumn<Members, Integer> ageColumn = new TableColumn<>("Age");
-            ageColumn.setCellValueFactory(new PropertyValueFactory<>("age"));
-
-            TableColumn<Members, String> genderColumn = new TableColumn<>("Gender");
-            genderColumn.setCellValueFactory(new PropertyValueFactory<>("gender"));
-
-            TableColumn<Members, String> membershipColumn = new TableColumn<>("Membership");
-            membershipColumn.setCellValueFactory(new PropertyValueFactory<>("membership"));
-
-            TableColumn<Members, String> dateColumn = new TableColumn<>("Date");
-            dateColumn.setCellValueFactory(new PropertyValueFactory<>("date1"));
-
-            tableView.getColumns().addAll(nameColumn, ageColumn, genderColumn, membershipColumn, dateColumn);
-            tableView.setItems(readMembers());
-            tableView.refresh();
 //            gridPane1.add(textArea,3,5);
 //            textArea.setEditable(false);
              //showMembers();
