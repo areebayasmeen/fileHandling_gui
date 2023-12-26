@@ -3,16 +3,11 @@ package com.example.myowngui;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 //import java.awt.*;
@@ -34,6 +29,7 @@ public class HelloApplication extends Application {
     LocalDate date;
     TableView<Members> tableView = new TableView<>();
     ObservableList<Members> membersList ;
+    
 
 
 //start method
@@ -62,8 +58,13 @@ public class HelloApplication extends Application {
         TableColumn<Members, String> dateColumn = new TableColumn<>("Date");
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("date1"));
 
-        tableView.getColumns().addAll(nameColumn, ageColumn, genderColumn, membershipColumn, dateColumn);
-        tableView.setItems(readMembers());
+        tableView.getColumns().add(nameColumn);
+        tableView.getColumns().add(ageColumn);
+        tableView.getColumns().add(genderColumn);
+        tableView.getColumns().add(membershipColumn);
+        tableView.getColumns().add(dateColumn);
+        membersList = readMembers();
+        tableView.setItems(membersList);
         tableView.refresh();
 
         Button backButtonforDetails=new Button("back");
@@ -83,6 +84,7 @@ public class HelloApplication extends Application {
         GridPane.setMargin(button, buttonInsets);
         GridPane.setMargin(nameField, textInsets);
         GridPane.setMargin(ageField, textInsets);
+        
         toggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
 
             if (newValue != null) {
@@ -134,28 +136,26 @@ backbutton.setOnAction(actionEvent -> {//button to go back to main scene
 
 });
 //button to show member details on main scene
-        show_details.setOnAction( e1 -> { //this is where the problem is present
+show_details.setOnAction(e1 -> {
+    GridPane gridPane1 = new GridPane();
+    Scene scene2 = new Scene(gridPane1, 600, 500);
+    gridPane1.add(tableView, 1, 4);
+    gridPane1.add(backButtonforDetails, 100, 100);
 
-            GridPane gridPane1=new GridPane() ;
-            Scene scene2=new Scene(gridPane1,600,500);
-            gridPane1.add(tableView, 1, 4);
-            gridPane1.add(backButtonforDetails,100,100);
+    backButtonforDetails.setOnAction(actionEvent -> {
+        // Clear existing items from the TableView
+        tableView.getItems().clear();
+        
+        // Reload members from the file
+        tableView.setItems(readMembers());
+        
+        // Switch back to the main scene
+        stage.setScene(scene);
+    });
 
-//            gridPane1.add(textArea,3,5);
-//            textArea.setEditable(false);
-             //showMembers();
-            backButtonforDetails.setOnAction(actionEvent -> { //backbutton from details scene
-                try {
-                    start(stage);
-                } catch (IOException ex) {
-                    throw new RuntimeException(ex);
-                }
-            });
-
-            stage.setScene(scene2);
-            stage.show();
-
-        });
+    stage.setScene(scene2);
+    stage.show();
+});
 
         nameField.setPromptText("name");
         ageField.setPromptText("age");
@@ -216,38 +216,52 @@ backbutton.setOnAction(actionEvent -> {//button to go back to main scene
 // method to read members from file and return a list of members
     //this could contain error too
     public ObservableList<Members> readMembers() {
-        //  StringBuilder content = new StringBuilder();
-
         try {
-            FileReader   fileReader = new FileReader("memebers.txt");
-            BufferedReader  bufferedReader=new BufferedReader(fileReader);
-//            while ((line = bufferedReader.readLine()) != null) {
-//                content.append(line).append("\n");
-
+            FileReader fileReader = new FileReader("memebers.txt");
+            BufferedReader bufferedReader = new BufferedReader(fileReader);
+    
             String line;
-
+    
             while ((line = bufferedReader.readLine()) != null) {
-
+                // Ignore lines that are null or only contain whitespace
+                if (line.trim().isEmpty()) {
+                    continue;
+                }
+    
                 String[] parts = line.split("\\s+");
-
+    
                 if (parts.length == 5) {
                     String name = parts[0];
                     int age = Integer.parseInt(parts[1]);
                     String gender = parts[2];
-                    String membership=parts[3];
-                    String date1=parts[4];
-
+                    String membership = parts[3];
+                    String date1 = parts[4];
+    
+                    // Ignore entries where any part is null or age is zero
+                    if (name == null || age == 0 || gender == null || membership == null || date1 == null) {
+                        continue;
+                    }
+    
                     membersList.add(new Members(name, age, gender, membership, date1));
                 }
             }
-//            textArea.setText(content.toString());
+    
             bufferedReader.close();
             fileReader.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
-        return membersList;  }
-
+    
+        // Remove the first item if it's null
+        if (membersList.get(0).age == 0) {
+            membersList.remove(0);
+        }
+    
+        return membersList;
+    }
+    
+    
+    
 
     public static void main(String[] args) {
         launch();
