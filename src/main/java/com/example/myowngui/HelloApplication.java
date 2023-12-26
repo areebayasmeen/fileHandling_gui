@@ -52,8 +52,7 @@ public class HelloApplication extends Application {
         Button show_details=new Button("show details");//button to take user to details form
         Button select_membership_type=new Button("select");
         datePicker.setValue(LocalDate.now());
-        comboBox.setItems(FXCollections.observableArrayList(
-                "Standard", "Premium", "VIP")); // Add items to the ComboBox
+        comboBox.setItems(FXCollections.observableArrayList("Standard", "Premium", "VIP")); // Add items to the ComboBox
         male.setToggleGroup(toggleGroup); // Add RadioButton to the ToggleGroup
         male.setSelected(true);
         female.setToggleGroup(toggleGroup);
@@ -65,6 +64,7 @@ public class HelloApplication extends Application {
         GridPane.setMargin(nameField, textInsets);
         GridPane.setMargin(ageField, textInsets);
         toggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+
             if (newValue != null) {
                 RadioButton selectedRadioButton = (RadioButton) newValue;
                 String selectedOption = selectedRadioButton.getText();
@@ -181,7 +181,7 @@ backbutton.setOnAction(actionEvent -> {//button to go back to main scene
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
             bufferedWriter.write(name  );
-                    bufferedWriter.write(" ");
+            bufferedWriter.write(" ");
             bufferedWriter.write(age  );
 
                     if (male.isSelected()) {
@@ -196,8 +196,10 @@ backbutton.setOnAction(actionEvent -> {//button to go back to main scene
                         bufferedWriter.write(" ");
                         bufferedWriter.write(membershipType);
                       }
-                    if(date!=null){  bufferedWriter.write(" ");
-                                     bufferedWriter.write(String.valueOf(date  ));}
+                    if(date!=null){
+                        bufferedWriter.write(" ");
+                        bufferedWriter.write(String.valueOf(date  ));}
+
                     bufferedWriter.newLine();
                     bufferedWriter.close();
 
@@ -223,8 +225,9 @@ backbutton.setOnAction(actionEvent -> {//button to go back to main scene
             String line;
 
             while ((line = bufferedReader.readLine()) != null) {
+
                 String[] parts = line.split("\\s+");
-int i=0;
+
                 if (parts.length == 5) {
                     String name = parts[0];
                     int age = Integer.parseInt(parts[1]);
@@ -232,10 +235,7 @@ int i=0;
                     String membership=parts[3];
                     String date1=parts[4];
 
-
                     membersList.add(new Members(name, age, gender, membership, date1));
-
-
                 }
             }
 //            textArea.setText(content.toString());
