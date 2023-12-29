@@ -5,7 +5,7 @@ public class Members {
     int age;
     String gender;
     String membershipType;
-    String date;
+    String date1;
 
     public Members() {
 //        this.name = name;
@@ -19,6 +19,6 @@ public class Members {
         this.age = age;
         this.gender = gender;
         this.membershipType = membershipType;
-        this.date = date;
+        this.date1 = date;
     }
 }

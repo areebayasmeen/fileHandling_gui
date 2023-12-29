@@ -39,9 +39,10 @@ public class HelloApplication extends Application {
         GridPane grid = new GridPane();
         grid.setHgap(10);
         grid.setVgap(10);
+        
         Scene scene =new Scene(grid,600,500);
 
-        membersList = FXCollections.observableArrayList(new Members());
+        membersList = FXCollections.observableArrayList();
 
         TableColumn<Members, String> nameColumn = new TableColumn<>("Name");
         nameColumn.setCellValueFactory(new PropertyValueFactory<>("name"));
@@ -57,6 +58,8 @@ public class HelloApplication extends Application {
 
         TableColumn<Members, String> dateColumn = new TableColumn<>("Date");
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("date1"));
+
+        
 
         tableView.getColumns().add(nameColumn);
         tableView.getColumns().add(ageColumn);
@@ -95,6 +98,7 @@ public class HelloApplication extends Application {
 
             }
         });
+        
 
 //button to add members on main scene
     addMembers.setOnAction( e ->{
@@ -148,6 +152,7 @@ show_details.setOnAction(e1 -> {
         
         // Reload members from the file
         tableView.setItems(readMembers());
+
         
         // Switch back to the main scene
         stage.setScene(scene);
@@ -172,6 +177,7 @@ show_details.setOnAction(e1 -> {
   void datepicker(){
         date=datePicker.getValue();
   }
+  
 //method to write member to file
     void addMembers(){
 
@@ -179,7 +185,7 @@ show_details.setOnAction(e1 -> {
         String age = ageField.getText();
 
                 try {
-            FileWriter fileWriter = new FileWriter("memebers.txt", true);
+            FileWriter fileWriter = new FileWriter("members.txt", true);
             BufferedWriter bufferedWriter = new BufferedWriter(fileWriter);
 
             bufferedWriter.write(name  );
@@ -214,10 +220,9 @@ show_details.setOnAction(e1 -> {
     }
 
 // method to read members from file and return a list of members
-    //this could contain error too
     public ObservableList<Members> readMembers() {
         try {
-            FileReader fileReader = new FileReader("memebers.txt");
+            FileReader fileReader = new FileReader("members.txt");
             BufferedReader bufferedReader = new BufferedReader(fileReader);
     
             String line;
